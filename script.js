@@ -92,13 +92,13 @@
     function renderPuzzleOptions() {
         elements.puzzleOptions.replaceChildren();
 
-        window.WORD_LADDER_PUZZLES.forEach((puzzle, index) => {
+        window.WORD_LADDER_PUZZLES.forEach((_, index) => {
             const number = index + 1;
             const option = document.createElement('button');
             option.type = 'button';
             option.className = 'puzzle-option';
             option.dataset.puzzleNumber = String(number);
-            option.setAttribute('aria-label', `Play puzzle ${number}, ${formatDate(getPuzzleDate(number))}`);
+            option.setAttribute('aria-label', `Play puzzle ${number}`);
             if (number === dailyPuzzleNumber) {
                 option.classList.add('daily-puzzle');
             }
@@ -109,10 +109,7 @@
             const numberLabel = document.createElement('span');
             numberLabel.className = 'puzzle-option-number';
             numberLabel.textContent = String(number);
-            const dateLabel = document.createElement('span');
-            dateLabel.className = 'puzzle-option-date';
-            dateLabel.textContent = formatDate(new Date(`${puzzle.date}T00:00:00`));
-            option.append(numberLabel, dateLabel);
+            option.append(numberLabel);
             option.addEventListener('click', () => startPuzzle(number));
             elements.puzzleOptions.appendChild(option);
         });
