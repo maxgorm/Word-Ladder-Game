@@ -352,3 +352,24 @@ function getDailyPuzzle(date = new Date()) {
 
     return (exactPuzzle || fallbackPuzzle).levels.map(level => ({ ...level }));
 }
+
+function getPuzzleByNumber(number) {
+    const puzzle = window.WORD_LADDER_PUZZLES[Number(number) - 1]
+        || window.WORD_LADDER_PUZZLES[0];
+    return puzzle.levels.map(level => ({ ...level }));
+}
+
+function getDailyPuzzleNumber(date = new Date()) {
+    const requestedDate = getDateKey(date);
+    const exactIndex = window.WORD_LADDER_PUZZLES.findIndex(puzzle => puzzle.date === requestedDate);
+    if (exactIndex >= 0) {
+        return exactIndex + 1;
+    }
+
+    const fallbackPuzzle = window.WORD_LADDER_PUZZLES
+        .filter(puzzle => puzzle.date <= requestedDate)
+        .sort((a, b) => b.date.localeCompare(a.date))[0]
+        || window.WORD_LADDER_PUZZLES[0];
+
+    return window.WORD_LADDER_PUZZLES.indexOf(fallbackPuzzle) + 1;
+}
