@@ -6,39 +6,32 @@ let misses = 0; // Variable for the number of incorrect guesses
 let finalScore = 0; // Variable for the final score after multipliers
 let statsButton = document.getElementById('stats-button');
 
-// Levels will be fetched from the server when the game starts
-let levels = [];
+// Puzzle data is stored locally in puzzles.js, so the game has no runtime
+// dependency on the former Google App Engine service.
+let levels = getDailyPuzzle();
 
 // Start button event listener
 document.getElementById('start-button').addEventListener('click', function() {
-    // Fetch levels from server
-    fetch('https://word-ladder-server.uc.r.appspot.com/api/ladder')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Data received from server:', data);  // Log the raw data
-            levels = data; // Assign the entire data array to levels
-            console.log('Levels after processing:', levels);  // Log the processed data
+    levels = getDailyPuzzle();
+    currentLevel = 0;
+    score = 0;
+    misses = 0;
+    finalScore = 0;
+    document.getElementById('misses').textContent = 'Misses: 0';
+    document.getElementById('message').textContent = '';
+    document.getElementById('submit-guess').disabled = false;
 
-            // Set up the first level
-            currentLevel = 0;
-            updateWordAndHint();
+    updateWordAndHint();
 
-            // Start the timer
-            startTime = Date.now();
-            timer = setInterval(updateTimer, 10); // Update the timer every 10 milliseconds
+    // Start the timer
+    startTime = Date.now();
+    timer = setInterval(updateTimer, 10);
 
-            // Focus the first input field
-            let firstGuessCell = document.querySelector(`.guess-cell.row-1`);
-            if (firstGuessCell) {
-                firstGuessCell.focus();
-            }
-        })
-        .catch(error => console.error('Error:', error));
+    // Focus the first input field
+    let firstGuessCell = document.querySelector('.guess-cell.row-1');
+    if (firstGuessCell) {
+        firstGuessCell.focus();
+    }
 
     // Hide the start screen and show the game
     document.getElementById('start-screen').style.display = 'none';
@@ -174,6 +167,9 @@ function updateTimer() {
 function isOneLetterDifferent(word1, word2) {
     word1 = word1.toLowerCase();
     word2 = word2.toLowerCase();
+    if (word1.length !== word2.length) {
+        return false;
+    }
     let diffCount = 0;
     for (let i = 0; i < word1.length; i++) {
         if (word1[i] !== word2[i]) {
@@ -196,7 +192,7 @@ document.getElementById('submit-guess').addEventListener('click', function() {
         score++;
         document.getElementById('score').textContent = 'Score: ' + score;
         
-        if (score === 5) {
+        if (score === levels.length - 1) {
             clearInterval(timer);
             document.getElementById('submit-guess').disabled = true;
 
