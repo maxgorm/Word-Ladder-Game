@@ -1,287 +1,407 @@
+:root {
+    color-scheme: light;
+    --page: #f6f7f5;
+    --surface: #ffffff;
+    --surface-muted: #eef1ed;
+    --text: #172019;
+    --muted: #647067;
+    --border: #dbe2dc;
+    --accent: #347a51;
+    --accent-strong: #28623f;
+    --accent-soft: #dcecdf;
+    --danger: #b84a4a;
+    --shadow: 0 16px 40px rgba(31, 48, 37, 0.08);
+}
+
+body[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #17201a;
+    --surface: #202c23;
+    --surface-muted: #29372d;
+    --text: #f0f4ef;
+    --muted: #b5c1b7;
+    --border: #3a4a3e;
+    --accent: #8bc49b;
+    --accent-strong: #a9d9b5;
+    --accent-soft: #304c38;
+    --danger: #f08b8b;
+    --shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+}
+
+* {
+    box-sizing: border-box;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    color: black;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    min-width: 320px;
+    min-height: 100vh;
+    margin: 0;
+    padding: 32px 16px;
+    background: var(--page);
+    color: var(--text);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    line-height: 1.5;
+    transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-body[style*="background-color: black"] {
-    color: white;
+body[data-theme="light"] {
+    background-color: #f6f7f5;
 }
 
-body[style*="background-color: black"] * {
-    color: white;
+body[data-theme="dark"] {
+    background-color: #17201a;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+button {
+    border: 0;
+    cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent);
+    outline-offset: 3px;
+}
+
+#start-screen,
+#game-container {
+    width: min(100%, 560px);
+    margin: 0 auto;
+    padding: clamp(24px, 5vw, 44px);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    text-align: center;
+}
+
+#start-screen {
+    position: relative;
+    min-height: min(680px, calc(100vh - 64px));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#start-screen h1,
+#game-container h1 {
+    max-width: 430px;
+    margin: 0;
+    font-size: clamp(1.75rem, 5vw, 2.35rem);
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+}
+
+#current-date,
+#main-game-date,
+#end-screen-date {
+    margin: 14px 0 0;
+    color: var(--muted);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+#start-screen h2:not(#current-date) {
+    margin: 36px 0 10px;
+    font-size: 1.15rem;
+}
+
+#start-screen ul {
+    width: min(100%, 420px);
+    margin: 0;
+    padding-left: 20px;
+    color: var(--muted);
+    text-align: left;
+}
+
+#start-screen li + li {
+    margin-top: 7px;
+}
+
+#start-button {
+    min-width: 150px;
+    margin-top: 28px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+#start-button:hover,
+#start-button:focus-visible {
+    background: var(--accent-strong);
+    transform: translateY(-1px);
+}
+
+#instructions-bg-color-toggle,
+#bg-color-toggle,
+#stats-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: var(--surface-muted);
+    color: var(--text);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+#instructions-bg-color-toggle {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+}
+
+#instructions-bg-color-toggle:hover,
+#bg-color-toggle:hover,
+#stats-button:hover,
+#closeEndScreen:hover {
+    background: var(--accent-soft);
+    transform: translateY(-1px);
 }
 
 #game-container {
-    width: 600px;
-    margin: 0 auto;
-    text-align: center;
-    color: black;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    display: none;
 }
 
-#game-container[style*="background-color: black"] {
-    color: white;
+#game-container h1 {
+    font-size: clamp(1.65rem, 5vw, 2rem);
 }
 
-#buttons-container {
-    position: fixed;
-    top: 10px;
-    right: 10px;
+#main-game-date {
+    margin-top: 6px;
 }
 
-#guess-row {
-    margin-top: 20px;
+#timer {
+    margin: 18px 0 0;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
 }
 
-.guess-cell {
-    width: 46px;
-    height: 46px;
-    line-height: 46px;
-    margin: 5px;
-    background-color: #b3b3b3;
-    text-align: center;
-    border: none;
-    font-size: 20px;
-    text-transform: uppercase;
-}
-
-.guess-cell:focus {
-    outline: none;
+#misses {
+    margin: 20px 0 24px;
+    color: var(--danger);
+    font-size: 0.95rem;
+    font-weight: 700;
 }
 
 #word-grid {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 20px;
+    gap: 8px;
+    margin: 12px 0 22px;
 }
 
 .row {
     display: flex;
+    gap: 8px;
+}
+
+.cell,
+.guess-cell {
+    width: clamp(42px, 12vw, 54px);
+    height: clamp(42px, 12vw, 54px);
+    border-radius: 10px;
+    text-align: center;
+    font-size: clamp(1.15rem, 5vw, 1.45rem);
+    font-weight: 800;
+    line-height: 1;
 }
 
 .cell {
-    width: 50px;
-    height: 50px;
-    line-height: 50px;
-    margin: 5px;
-    background-color: white;
-    text-align: center;
-}
-
-.correct {
-    background-color: #74B72E;
-    color: white;
-}
-
-.bottom-row {
-    width: 50px;
-    height: 50px;
-    line-height: 50px;
-    margin: 5px;
-    background-color: #f3f3f3;
-    text-align: center;
-}
-
-#start-screen {
-    display: flex;
-    flex-direction: column;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 50%;
-    margin: auto;
-    text-align: center;
+    background: var(--accent-soft);
+    color: var(--accent-strong);
 }
 
-#start-screen ul {
-    list-style-type: disc;
-    margin-left: 20px;
-    text-align: left;
+.guess-cell {
+    border: 2px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    text-transform: uppercase;
+    caret-color: var(--accent);
 }
 
-#start-button {
-    margin-top: 20px;
-    padding: 10px;
-    background-color: #4CAF50;
-    border: none;
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
+.guess-cell:focus {
+    border-color: var(--accent);
 }
 
-#misses {
-    font-size: 24px;
-    color: red;
-    text-align: center;
-    margin-top: 20px;
-    margin-bottom: 20px;
+#hint {
+    min-height: 48px;
+    margin: 0 auto 18px;
+    padding: 11px 14px;
+    border-radius: 10px;
+    background: var(--surface-muted);
+    color: var(--muted);
+    font-size: 0.95rem;
 }
 
-
-
-@keyframes popIn {
-    0% {
-        transform: scale(0);
-        opacity: 0;
-    }
-    80% {
-        transform: scale(1.1);
-    }
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
+#submit-guess {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 44px;
+    border-radius: 10px;
+    background: var(--accent);
+    color: #fff;
+    transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
+#submit-guess:hover:not(:disabled),
+#submit-guess:focus-visible {
+    background: var(--accent-strong);
+    transform: translateY(-1px);
+}
 
+#submit-guess:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+#message {
+    min-height: 24px;
+    margin: 14px 0 0;
+    color: var(--accent-strong);
+    font-weight: 700;
+}
+
+#buttons-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 28px;
+}
+
+#final-score {
+    color: var(--muted);
+}
 
 .end-screen {
-    display: none;
     position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgb(0,0,0);
-    background-color: rgba(0,0,0,0.4);
-    animation: popIn 0.5s;
-    overflow: hidden;
-
+    z-index: 10;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(15, 23, 17, 0.55);
+    animation: fadeIn 0.2s ease;
 }
 
 .end-screen-content {
     position: relative;
-    background-color: #aeaeae;
-    margin: 15% auto;
-    padding: 20px;
-    border: 10px solid #535353;
-    width: 20%;
+    width: min(100%, 380px);
+    padding: 34px 28px 28px;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    background: var(--surface);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
     text-align: center;
+}
+
+.end-screen-content h2:first-child {
+    margin: 0;
+    font-size: 1.6rem;
+}
+
+.end-screen-content h3 {
+    margin: 10px 0;
+    color: var(--muted);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.end-screen-content p {
+    margin: 24px 0 10px;
+    color: var(--muted);
+}
+
+#share-button,
+#closeEndScreen {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+#share-button:hover,
+#share-button:focus-visible {
+    background: var(--accent-strong);
+    transform: translateY(-1px);
 }
 
 #closeEndScreen {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    /* other styles... */
+    top: 12px;
+    right: 12px;
+    width: 34px;
+    height: 34px;
+    background: var(--surface-muted);
+    color: var(--text);
 }
 
-#submit-guess {
-    border: 3px solid #000000;  /* Change to the color of your choice */
-    background-color: #74B72E;
-    color: #000000;
-    padding: 10px;  /* Adjust padding to your preference */
-    height: 50px;
+#clipboard-notification {
+    margin-top: 12px;
+    color: var(--accent-strong);
+    font-size: 0.85rem;
+    font-weight: 700;
 }
 
-
-button {
-    border: none;
-    padding: 0;
-    background: none;
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
-#instructions-bg-color-toggle {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-}
-
-.shareTwitterIcon {
-    width: 28px;
-    height: 24px;
-}
-
-@keyframes pop {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.1);
-    }
-    100% {
-        transform: scale(1);
-    }
-}
-
-.tile-pop {
-    animation: pop 0.3s;
-}
-
-button:hover {
-    cursor: pointer;
-}
-
-
-
-/* This is for Chrome, Safari, and newer versions of Opera */
-::-webkit-scrollbar {
-    width: 5px;
-}
-
-::-webkit-scrollbar-track {
-    background: transparent; 
-}
-
-::-webkit-scrollbar-thumb {
-    background: #888; 
-}
-
-/* This is for Internet Explorer and Microsoft Edge */
-body {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: thin;  /* Firefox */
-}
-
-/*Web Only*/
-
-.notification {
-    display: none;  /* Hidden by default */
-    background-color: #4CAF50;  /* Green background */
-    color: white;  /* White text */
-    text-align: center;  /* Centered text */
-    border-radius: 2px;  /* Rounded corners */
-    padding: 16px;  /* Padding */
-    position: fixed;  /* Positioned relative to the browser window */
-    z-index: 1;  /* Above other elements */
-    left: 50%;  /* Center the notification */
-    transform: translateX(-50%);  /* Shift the notification to the left by half its width */
-    bottom: 30px;  /* Place it at the bottom of the page */
-}
-
-
-
-/*CSS mobile device edits below*/
-
-
-@media screen and (max-width: 600px) {
+@media (max-width: 600px) {
     body {
-        overflow-x: hidden;
+        padding: 12px;
     }
 
+    #start-screen,
     #game-container {
-        width: 100%;
-        margin: 0 auto;
+        min-height: calc(100vh - 24px);
+        padding: 28px 18px;
+        border-radius: 16px;
     }
-}
 
-@media screen and (max-width: 600px) {
     #start-screen {
-        width: 100%;
-        padding: 20px;
-        box-sizing: border-box;
+        justify-content: flex-start;
+        padding-top: 76px;
+    }
+
+    #start-screen ul {
+        font-size: 0.95rem;
+    }
+
+    .row {
+        gap: 6px;
+    }
+
+    .cell,
+    .guess-cell {
+        border-radius: 8px;
     }
 
     .end-screen-content {
-        width: 100%;
-        padding: 20px;
-        box-sizing: border-box;
+        padding: 32px 20px 24px;
     }
 }
