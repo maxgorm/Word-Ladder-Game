@@ -12,7 +12,12 @@
 <body>
     <main id="start-screen">
         <h1>Welcome to the Word Ladder Game</h1>
-        <h2 id="current-date"></h2>
+        <div class="date-line">
+            <h2 id="current-date"></h2>
+            <a id="start-puzzle-link" class="puzzle-number-link" href="#puzzle-select-screen" title="View all puzzles" data-tooltip="View all puzzles" aria-label="View all puzzles">
+                Puzzle <span id="start-puzzle-number">1</span> of 30
+            </a>
+        </div>
         <h2>How to play</h2>
         <ul>
             <li>Guess the next word by changing one letter from the current word.</li>
@@ -25,8 +30,15 @@
         </button>
     </main>
     <main id="game-container">
-        <h1>Daily Word Ladder</h1>
-        <h2 id="main-game-date"></h2>
+        <div class="game-header">
+            <h1>Daily Word Ladder</h1>
+            <div class="date-line">
+                <h2 id="main-game-date"></h2>
+                <a id="game-puzzle-link" class="puzzle-number-link" href="#puzzle-select-screen" title="View all puzzles" data-tooltip="View all puzzles" aria-label="View all puzzles">
+                    Puzzle <span id="game-puzzle-number">1</span> of 30
+                </a>
+            </div>
+        </div>
         <h2 hidden id="level">MM/DD</h2>
         <h2 hidden id="timer">00:00.00</h2>
         <div id="misses">Misses: 0</div>
@@ -58,7 +70,12 @@
     <div id="endScreen" class="end-screen">
         <div class="end-screen-content">
             <h2>Congratulations!</h2>
-            <h2 id="end-screen-date"></h2>
+            <div class="date-line">
+                <h2 id="end-screen-date"></h2>
+                <a id="end-puzzle-link" class="puzzle-number-link" href="#puzzle-select-screen" title="View all puzzles" data-tooltip="View all puzzles" aria-label="View all puzzles">
+                    Puzzle <span id="end-puzzle-number">1</span> of 30
+                </a>
+            </div>
             <h3 id="endFinalTime">Final time: </h3>
             <h3 id="endMisses"></h3><br>
             <h2 id="endFinalScore">Final score (lower is better): </h2>
@@ -71,6 +88,17 @@
             <button id="closeEndScreen" type="button" title="Close stats screen" aria-label="Close stats screen">
                 <span class="material-symbols-outlined" aria-hidden="true">close</span>
             </button>
+        </div>
+    </div>
+
+    <div id="puzzle-select-screen" class="puzzle-select-screen" role="dialog" aria-modal="true" aria-labelledby="puzzle-select-title" style="display: none;">
+        <div class="puzzle-select-content">
+            <button id="close-puzzle-select" class="puzzle-select-close" type="button" title="Close puzzle selection" aria-label="Close puzzle selection">
+                <span class="material-symbols-outlined" aria-hidden="true">close</span>
+            </button>
+            <h2 id="puzzle-select-title">Choose a puzzle</h2>
+            <p>Select any puzzle from the 30-puzzle schedule.</p>
+            <div id="puzzle-options" class="puzzle-options"></div>
         </div>
     </div>
 

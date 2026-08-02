@@ -92,7 +92,8 @@ input:focus-visible {
 #start-screen h1,
 #game-container h1 {
     max-width: 430px;
-    margin: 0;
+    width: 100%;
+    margin: 0 auto;
     font-size: clamp(1.75rem, 5vw, 2.35rem);
     line-height: 1.15;
     letter-spacing: -0.03em;
@@ -101,10 +102,78 @@ input:focus-visible {
 #current-date,
 #main-game-date,
 #end-screen-date {
-    margin: 14px 0 0;
+    margin: 0;
     color: var(--muted);
     font-size: 1rem;
     font-weight: 600;
+}
+
+.game-header {
+    width: 100%;
+    text-align: center;
+}
+
+.date-line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    margin-top: 14px;
+    text-align: center;
+}
+
+.game-header .date-line {
+    margin-top: 6px;
+}
+
+.puzzle-number-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 3px 9px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface-muted);
+    color: var(--accent-strong);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.puzzle-number-link:hover,
+.puzzle-number-link:focus-visible {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    transform: translateY(-1px);
+}
+
+.puzzle-number-link::after {
+    position: absolute;
+    z-index: 20;
+    top: calc(100% + 8px);
+    left: 50%;
+    width: max-content;
+    max-width: 180px;
+    padding: 6px 9px;
+    border-radius: 7px;
+    background: var(--text);
+    color: var(--surface);
+    content: attr(data-tooltip);
+    font-size: 0.75rem;
+    font-weight: 600;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -3px);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.puzzle-number-link:hover::after,
+.puzzle-number-link:focus-visible::after {
+    opacity: 1;
+    transform: translate(-50%, 0);
 }
 
 #start-screen h2:not(#current-date) {
@@ -172,6 +241,7 @@ input:focus-visible {
 
 #game-container {
     display: none;
+    text-align: center;
 }
 
 #game-container h1 {
@@ -366,6 +436,106 @@ input:focus-visible {
     font-weight: 700;
 }
 
+.puzzle-select-screen {
+    position: fixed;
+    z-index: 20;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(15, 23, 17, 0.55);
+    animation: fadeIn 0.2s ease;
+}
+
+.puzzle-select-content {
+    position: relative;
+    width: min(100%, 560px);
+    max-height: min(720px, calc(100vh - 40px));
+    overflow-y: auto;
+    padding: 34px 28px 28px;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    background: var(--surface);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.puzzle-select-content h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.puzzle-select-content > p {
+    margin: 8px 0 22px;
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+
+.puzzle-select-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--surface-muted);
+    color: var(--text);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.puzzle-select-close:hover,
+.puzzle-select-close:focus-visible {
+    background: var(--accent-soft);
+    transform: translateY(-1px);
+}
+
+.puzzle-options {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 9px;
+}
+
+.puzzle-option {
+    display: flex;
+    min-height: 70px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 8px 5px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    color: var(--text);
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.puzzle-option:hover,
+.puzzle-option:focus-visible,
+.puzzle-option.selected-puzzle {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    transform: translateY(-1px);
+}
+
+.puzzle-option.daily-puzzle {
+    box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+.puzzle-option-number {
+    font-size: 1.05rem;
+    font-weight: 800;
+}
+
+.puzzle-option-date {
+    color: var(--muted);
+    font-size: 0.7rem;
+}
+
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -403,5 +573,13 @@ input:focus-visible {
 
     .end-screen-content {
         padding: 32px 20px 24px;
+    }
+
+    .puzzle-select-content {
+        padding: 32px 18px 22px;
+    }
+
+    .puzzle-options {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }

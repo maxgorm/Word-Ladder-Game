@@ -5,18 +5,23 @@
     let startTime = null;
     let misses = 0;
     let finalScore = 0;
-    let levels = getDailyPuzzle();
+    const dailyPuzzleNumber = getDailyPuzzleNumber();
+    let activePuzzleNumber = dailyPuzzleNumber;
+    let activePuzzleIsDaily = true;
+    let levels = getPuzzleByNumber(activePuzzleNumber);
     let guessCells = [];
 
     const elements = {};
 
     function cacheElements() {
         [
-            'start-screen', 'start-button', 'current-date', 'instructions-bg-color-toggle',
+            'start-screen', 'start-button', 'current-date', 'start-puzzle-link', 'start-puzzle-number',
+            'instructions-bg-color-toggle',
             'game-container', 'main-game-date', 'timer', 'misses', 'score', 'word-grid',
-            'hint', 'submit-guess', 'message', 'bg-color-toggle', 'stats-button',
-            'endScreen', 'end-screen-date', 'endFinalTime', 'endMisses', 'endFinalScore',
-            'share-button', 'clipboard-notification', 'closeEndScreen'
+            'hint', 'submit-guess', 'message', 'bg-color-toggle', 'stats-button', 'game-puzzle-link', 'game-puzzle-number',
+            'endScreen', 'end-screen-date', 'end-puzzle-link', 'end-puzzle-number', 'endFinalTime', 'endMisses', 'endFinalScore',
+            'share-button', 'clipboard-notification', 'closeEndScreen', 'puzzle-select-screen', 'puzzle-options',
+            'close-puzzle-select'
         ].forEach(id => {
             elements[id] = document.getElementById(id);
         });
@@ -25,15 +30,24 @@
             startScreen: elements['start-screen'],
             startButton: elements['start-button'],
             currentDate: elements['current-date'],
+            startPuzzleLink: elements['start-puzzle-link'],
+            startPuzzleNumber: elements['start-puzzle-number'],
             instructionsToggle: elements['instructions-bg-color-toggle'],
             gameContainer: elements['game-container'],
             mainGameDate: elements['main-game-date'],
+            gamePuzzleLink: elements['game-puzzle-link'],
+            gamePuzzleNumber: elements['game-puzzle-number'],
             submitGuess: elements['submit-guess'],
             bgColorToggle: elements['bg-color-toggle'],
             statsButton: elements['stats-button'],
             endScreenDate: elements['end-screen-date'],
+            endPuzzleLink: elements['end-puzzle-link'],
+            endPuzzleNumber: elements['end-puzzle-number'],
             shareButton: elements['share-button'],
-            clipboardNotification: elements['clipboard-notification']
+            clipboardNotification: elements['clipboard-notification'],
+            puzzleSelectScreen: elements['puzzle-select-screen'],
+            puzzleOptions: elements['puzzle-options'],
+            closePuzzleSelect: elements['close-puzzle-select']
         });
     }
 
@@ -56,6 +70,65 @@
 
     function toggleTheme() {
         setTheme(document.body.dataset.theme === 'dark' ? 'light' : 'dark');
+    }
+
+    function getPuzzleDate(number) {
+        const puzzle = window.WORD_LADDER_PUZZLES[Number(number) - 1] || window.WORD_LADDER_PUZZLES[0];
+        return new Date(`${puzzle.date}T00:00:00`);
+    }
+
+    function updatePuzzleContext() {
+        const activeDate = formatDate(getPuzzleDate(activePuzzleNumber));
+        const numberText = String(activePuzzleNumber);
+
+        elements.currentDate.textContent = formatDate(new Date());
+        elements.mainGameDate.textContent = activeDate;
+        elements.endScreenDate.textContent = activeDate;
+        elements.startPuzzleNumber.textContent = String(dailyPuzzleNumber);
+        elements.gamePuzzleNumber.textContent = numberText;
+        elements.endPuzzleNumber.textContent = numberText;
+    }
+
+    function renderPuzzleOptions() {
+        elements.puzzleOptions.replaceChildren();
+
+        window.WORD_LADDER_PUZZLES.forEach((puzzle, index) => {
+            const number = index + 1;
+            const option = document.createElement('button');
+            option.type = 'button';
+            option.className = 'puzzle-option';
+            option.dataset.puzzleNumber = String(number);
+            option.setAttribute('aria-label', `Play puzzle ${number}, ${formatDate(getPuzzleDate(number))}`);
+            if (number === dailyPuzzleNumber) {
+                option.classList.add('daily-puzzle');
+            }
+            if (number === activePuzzleNumber) {
+                option.classList.add('selected-puzzle');
+            }
+
+            const numberLabel = document.createElement('span');
+            numberLabel.className = 'puzzle-option-number';
+            numberLabel.textContent = String(number);
+            const dateLabel = document.createElement('span');
+            dateLabel.className = 'puzzle-option-date';
+            dateLabel.textContent = formatDate(new Date(`${puzzle.date}T00:00:00`));
+            option.append(numberLabel, dateLabel);
+            option.addEventListener('click', () => startPuzzle(number));
+            elements.puzzleOptions.appendChild(option);
+        });
+    }
+
+    function openPuzzleSelect(event) {
+        if (event) {
+            event.preventDefault();
+        }
+        renderPuzzleOptions();
+        elements.endScreen.style.display = 'none';
+        elements.puzzleSelectScreen.style.display = 'flex';
+    }
+
+    function closePuzzleSelect() {
+        elements.puzzleSelectScreen.style.display = 'none';
     }
 
     function updateTimer() {
@@ -191,10 +264,12 @@
         finalScore = Math.round(timeInSeconds * (10 + misses));
         const finalTime = `${timeInSeconds.toFixed(2)}s`;
 
-        localStorage.setItem('finalTime', finalTime);
-        localStorage.setItem('misses', String(misses));
-        localStorage.setItem('finalScore', String(finalScore));
-        localStorage.setItem('lastCompletedDate', new Date().toDateString());
+        if (activePuzzleIsDaily) {
+            localStorage.setItem('finalTime', finalTime);
+            localStorage.setItem('misses', String(misses));
+            localStorage.setItem('finalScore', String(finalScore));
+            localStorage.setItem('lastCompletedDate', new Date().toDateString());
+        }
 
         showEndScreen(finalTime, misses, finalScore);
     }
@@ -233,8 +308,15 @@
         focusFirstGuessCell();
     }
 
-    function startGame() {
-        levels = getDailyPuzzle();
+    function startPuzzle(number) {
+        if (timer) {
+            clearInterval(timer);
+            timer = null;
+        }
+
+        activePuzzleNumber = Number(number);
+        activePuzzleIsDaily = activePuzzleNumber === dailyPuzzleNumber;
+        levels = getPuzzleByNumber(activePuzzleNumber);
         currentLevel = 0;
         score = 0;
         misses = 0;
@@ -245,7 +327,9 @@
         elements.submitGuess.disabled = false;
         elements.statsButton.style.display = 'none';
         elements.endScreen.style.display = 'none';
+        closePuzzleSelect();
 
+        updatePuzzleContext();
         updateWordAndHint();
         elements.startScreen.style.display = 'none';
         elements.gameContainer.style.display = 'block';
@@ -254,6 +338,10 @@
         elements.timer.textContent = '00:00.00';
         timer = setInterval(updateTimer, 10);
         focusFirstGuessCell();
+    }
+
+    function startGame() {
+        startPuzzle(dailyPuzzleNumber);
     }
 
     async function shareResults() {
@@ -288,6 +376,9 @@
             return;
         }
 
+        activePuzzleNumber = dailyPuzzleNumber;
+        activePuzzleIsDaily = true;
+        levels = getPuzzleByNumber(activePuzzleNumber);
         currentLevel = levels.length - 1;
         finalScore = Number(localStorage.getItem('finalScore')) || 0;
         elements.startScreen.style.display = 'none';
@@ -303,16 +394,17 @@
     function initialize() {
         cacheElements();
 
-        const today = new Date();
-        const formattedDate = formatDate(today);
-        elements.currentDate.textContent = formattedDate;
-        elements.mainGameDate.textContent = formattedDate;
-        elements.endScreenDate.textContent = formattedDate;
+        updatePuzzleContext();
         elements.gameContainer.style.display = 'none';
         elements.endScreen.style.display = 'none';
+        elements.puzzleSelectScreen.style.display = 'none';
+        renderPuzzleOptions();
 
         setTheme(localStorage.getItem('theme') || 'light');
         elements.startButton.addEventListener('click', startGame);
+        elements.startPuzzleLink.addEventListener('click', openPuzzleSelect);
+        elements.gamePuzzleLink.addEventListener('click', openPuzzleSelect);
+        elements.endPuzzleLink.addEventListener('click', openPuzzleSelect);
         elements.submitGuess.addEventListener('click', submitGuess);
         elements.instructionsToggle.addEventListener('click', toggleTheme);
         elements.bgColorToggle.addEventListener('click', toggleTheme);
@@ -322,6 +414,7 @@
         elements.closeEndScreen.addEventListener('click', () => {
             elements.endScreen.style.display = 'none';
         });
+        elements.closePuzzleSelect.addEventListener('click', closePuzzleSelect);
         elements.shareButton.addEventListener('click', shareResults);
 
         restoreCompletedGame();
