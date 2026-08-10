@@ -235,7 +235,8 @@
         }
 
         updateWordGrid();
-        elements.hint.textContent = `Hint: ${levels[currentLevel].hint}`;
+        const hintLevel = currentLevel < levels.length - 1 ? currentLevel + 1 : currentLevel;
+        elements.hint.textContent = `Hint: ${levels[hintLevel].hint}`;
     }
 
     function showEndScreen(finalTime, completedMisses, completedScore) {
